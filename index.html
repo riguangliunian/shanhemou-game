@@ -867,12 +867,14 @@
     color:rgba(211,190,139,.72);opacity:.66;cursor:pointer;filter:drop-shadow(0 4px 7px rgba(0,0,0,.58));
     transition:opacity .22s ease,color .22s ease,transform .22s ease}
   #audio-btn:hover,#audio-btn:focus-visible{opacity:1;color:#e2c779;transform:translateY(-2px);outline:none}
+  #audio-btn.needs-gesture{opacity:1;color:#e2c779;animation:audioWake 1.25s ease-in-out infinite}
   #audio-btn svg{display:block;width:100%;height:100%;overflow:visible}
   #audio-btn .audio-bell,#audio-btn .audio-wave{fill:none;stroke:currentColor;stroke-width:1.35;stroke-linecap:round;stroke-linejoin:round}
   #audio-btn .audio-clapper{fill:#9f4036;stroke:rgba(227,154,117,.7);stroke-width:.65}
   #audio-btn.muted .audio-wave{opacity:.16}
   #audio-btn::after{content:"";position:absolute;left:8px;top:19px;width:22px;height:1px;background:#a74438;opacity:0;transform:rotate(-43deg);box-shadow:0 0 3px rgba(145,42,33,.5)}
   #audio-btn.muted::after{opacity:.9}
+  @keyframes audioWake{0%,100%{filter:drop-shadow(0 4px 7px rgba(0,0,0,.58))}50%{filter:drop-shadow(0 0 9px rgba(226,199,121,.75))}}
 
   /* 游戏内标题使用纯透明金字，不再依靠 screen 混合或径向蒙版隐藏底图。 */
   #title{background-image:url("assets/game_logo_shanhemou_cover_transparent_v4.webp");mix-blend-mode:normal;
@@ -3392,7 +3394,20 @@ class BgmDirector{
     this.channels=[new Audio(),new Audio()];
     this.channels.forEach((a,index)=>{a.loop=true;a.preload='auto';a.volume=0;a.hidden=true;a.dataset.bgmChannel=String(index);document.body.appendChild(a)});
     this.active=0;this.mood=null;this.unlocked=false;this.fadeToken=0;
+    /* 音频系统升级时清除旧版本遗留的意外静音；之后仍尊重玩家的新选择。 */
+    const audioPrefVersion='20260810-audio3';
+    if(localStorage.getItem('shanhemou_audio_pref_version')!==audioPrefVersion){
+      localStorage.setItem('shanhemou_audio_pref_version',audioPrefVersion);
+      localStorage.setItem('shanhemou_bgm_muted','0');
+    }
     this.muted=localStorage.getItem('shanhemou_bgm_muted')==='1';
+  }
+  markAudible(){
+    const button=document.getElementById('audio-btn');if(button)button.classList.remove('needs-gesture');
+  }
+  requestGesture(){
+    const button=document.getElementById('audio-btn');
+    if(button){button.classList.add('needs-gesture');button.title='点击开启背景音乐'}
   }
   unlock(){
     if(this.unlocked){this.resume();return}
@@ -3400,14 +3415,14 @@ class BgmDirector{
     this.mood='tension';
     const a=this.channels[this.active];
     a.src=BGM_LIBRARY.tension.src;a.volume=0;
-    a.play().then(()=>this.fadeVolume(a,this.muted?0:BGM_LIBRARY.tension.volume,650)).catch(err=>console.warn('BGM unlock failed',err));
+    a.play().then(()=>{this.markAudible();this.fadeVolume(a,this.muted?0:BGM_LIBRARY.tension.volume,650)}).catch(err=>{this.requestGesture();console.warn('BGM unlock failed',err)});
   }
   resume(){
     if(!this.unlocked||this.muted)return;
     const current=this.channels[this.active];
     if(!current.src)return;
     if(current.paused){
-      current.play().then(()=>this.fadeVolume(current,BGM_LIBRARY[this.mood||'tension'].volume,500)).catch(err=>console.warn('BGM resume failed',err));
+      current.play().then(()=>{this.markAudible();this.fadeVolume(current,BGM_LIBRARY[this.mood||'tension'].volume,500)}).catch(err=>{this.requestGesture();console.warn('BGM resume failed',err)});
     }
   }
   infer(node){
@@ -3428,7 +3443,7 @@ class BgmDirector{
     const target=this.muted?0:Math.min(.38,base.volume+boost);
     if(this.mood===mood){
       const current=this.channels[this.active];
-      if(current.paused&&!this.muted)current.play().then(()=>this.fadeVolume(current,target,650)).catch(err=>console.warn('BGM unavailable',base.src,err));
+      if(current.paused&&!this.muted)current.play().then(()=>{this.markAudible();this.fadeVolume(current,target,650)}).catch(err=>{this.requestGesture();console.warn('BGM unavailable',base.src,err)});
       else this.fadeVolume(current,target,650);
       return;
     }
@@ -3439,7 +3454,7 @@ class BgmDirector{
     this.active=nextIndex;
     next.pause();next.src=base.src;next.currentTime=0;next.volume=0;
     const token=++this.fadeToken;
-    next.play().then(()=>this.crossfade(old,next,target,1800,token)).catch(err=>console.warn('BGM unavailable',base.src,err));
+    next.play().then(()=>{this.markAudible();this.crossfade(old,next,target,1800,token)}).catch(err=>{this.requestGesture();console.warn('BGM unavailable',base.src,err)});
   }
   crossfade(oldAudio,newAudio,target,duration,token){
     const started=performance.now(),oldStart=oldAudio.volume;
@@ -3473,7 +3488,17 @@ function syncAudioButton(){
   audioBtn.setAttribute('aria-label',bgm.muted?'开启背景音乐':'关闭背景音乐');
   audioBtn.title=bgm.muted?'开启音乐':'关闭音乐';
 }
-audioBtn.onclick=()=>{if(!bgm.unlocked)bgm.unlock();bgm.toggle();syncAudioButton()};
+audioBtn.onclick=()=>{
+  if(audioBtn.classList.contains('needs-gesture')){
+    if(bgm.muted){bgm.muted=false;localStorage.setItem('shanhemou_bgm_muted','0')}
+    if(!bgm.unlocked)bgm.unlock();else bgm.resume();
+    audioBtn.classList.remove('needs-gesture');
+  }else{
+    if(!bgm.unlocked)bgm.unlock();
+    bgm.toggle();
+  }
+  syncAudioButton();
+};
 syncAudioButton();
 
 /* 电影插槽：真实视频优先；文件不可用时自动启用 2.5D 连续分镜。 */
