@@ -714,6 +714,7 @@
   #start-btns .big-btn:first-child{grid-column:1/-1;min-height:50px;padding:12px 34px;background:linear-gradient(90deg,rgba(42,29,12,.72),rgba(8,7,8,.9) 27%,rgba(8,7,8,.9) 73%,rgba(42,29,12,.72));
     border-color:rgba(231,198,115,.82);color:#f0d998;font-size:16px;box-shadow:0 12px 34px rgba(0,0,0,.45),inset 0 0 24px rgba(211,166,69,.06)}
   #start-btns .big-btn.ghost{padding:9px 22px;border-color:rgba(205,174,105,.26);background:rgba(5,5,7,.54);font-size:12px;color:#bfb294;box-shadow:none}
+  #start-btns #load-save-cover{grid-column:1/-1;padding:7px 20px;font-size:10px;min-height:32px}
   #start-btns .big-btn:first-child:hover{background:linear-gradient(90deg,#8a652e,#d0a958,#8a652e);color:#120d07;box-shadow:0 0 34px rgba(221,180,82,.32)}
   #start-btns .big-btn.ghost:hover{background:rgba(173,132,54,.18);border-color:rgba(221,185,99,.56);color:#e0c98f}
   #start-cinematic-hint{z-index:3;margin-top:12px;color:rgba(205,184,138,.68);font-size:9px;letter-spacing:.16em}
@@ -739,6 +740,10 @@
   #cache-skip{margin-top:16px;padding:7px 18px;border:0;border-bottom:1px solid rgba(206,174,98,.28);background:transparent;
     color:#8f856f;font-family:inherit;font-size:10px;letter-spacing:.16em;cursor:pointer}
   #cache-skip:hover,#cache-skip:focus-visible{color:#d5c08b;border-color:rgba(222,188,105,.65);outline:none}
+  #cache-enter{display:none;margin:17px auto 0;min-width:210px;padding:11px 26px;border:1px solid rgba(225,194,115,.72);
+    background:linear-gradient(90deg,rgba(62,43,17,.78),rgba(11,10,10,.96),rgba(62,43,17,.78));color:#efd996;
+    font-family:"STKaiti","KaiTi",serif;font-size:15px;letter-spacing:.28em;cursor:pointer;box-shadow:0 0 22px rgba(216,176,76,.12)}
+  #cache-enter.show{display:block;animation:enterPulse 2.2s ease-in-out infinite}
   .cover-mist{z-index:2;opacity:.42}.cover-mist.mist-back{opacity:.3}.cover-embers{z-index:2;opacity:.72}
   #title{width:170px;height:64px;background-size:100% auto;background-position:center;mix-blend-mode:screen;opacity:.92;
     filter:saturate(.94) contrast(1.04) drop-shadow(0 4px 7px rgba(0,0,0,.48));
@@ -876,6 +881,35 @@
   #audio-btn.muted::after{opacity:.9}
   @keyframes audioWake{0%,100%{filter:drop-shadow(0 4px 7px rgba(0,0,0,.58))}50%{filter:drop-shadow(0 0 9px rgba(226,199,121,.75))}}
 
+  /* 剧情回看与存读档入口：仿古卷册图标。 */
+  .utility-btn{position:absolute;bottom:22px;z-index:13;width:38px;height:38px;padding:0;border:0;background:transparent;
+    color:rgba(211,190,139,.7);opacity:.64;cursor:pointer;filter:drop-shadow(0 4px 7px rgba(0,0,0,.58));transition:.22s ease}
+  .utility-btn:hover,.utility-btn:focus-visible{opacity:1;color:#e2c779;transform:translateY(-2px);outline:none}
+  .utility-btn svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.25;stroke-linecap:round;stroke-linejoin:round}
+  #history-btn{right:124px}#save-btn{right:171px}
+
+  .game-panel{position:fixed;inset:0;z-index:210;display:none;align-items:center;justify-content:center;padding:28px;
+    background:rgba(2,3,6,.82);backdrop-filter:blur(8px);opacity:0;transition:opacity .25s ease}
+  .game-panel.show{display:flex;opacity:1}
+  .game-panel-scroll{position:relative;width:min(760px,94vw);max-height:min(760px,88vh);padding:27px 30px 24px;overflow:hidden;
+    color:#d8cbaa;border:1px solid rgba(212,179,101,.42);background:linear-gradient(145deg,rgba(34,29,23,.97),rgba(7,9,12,.98) 48%,rgba(24,18,16,.97));
+    clip-path:polygon(12px 0,calc(100% - 12px) 0,100% 12px,100% calc(100% - 12px),calc(100% - 12px) 100%,12px 100%,0 calc(100% - 12px),0 12px);
+    box-shadow:0 24px 80px rgba(0,0,0,.75),inset 0 0 50px rgba(187,143,64,.04)}
+  .game-panel-head{display:flex;align-items:center;justify-content:space-between;padding-bottom:15px;border-bottom:1px solid rgba(213,180,101,.2)}
+  .game-panel-title{color:#ead59d;font-size:21px;letter-spacing:.3em}.game-panel-sub{margin-top:5px;color:#807663;font-size:9px;letter-spacing:.18em}
+  .panel-close{border:0;background:transparent;color:#a99a77;font-family:inherit;font-size:12px;letter-spacing:.18em;cursor:pointer}.panel-close:hover{color:#ead59d}
+  #history-list{max-height:calc(min(760px,88vh) - 112px);padding:8px 8px 16px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#8d7138 transparent}
+  .history-entry{display:grid;grid-template-columns:92px 1fr;gap:18px;padding:15px 6px;border-bottom:1px solid rgba(205,173,101,.1)}
+  .history-speaker{color:#c9aa66;font-size:12px;letter-spacing:.12em}.history-speaker.narrator{color:#807866}
+  .history-copy{white-space:pre-wrap;color:#d8cfbb;font-size:14px;line-height:1.8;letter-spacing:.045em}.history-entry.choice .history-copy{color:#d1af64}
+  .history-empty{padding:60px 10px;text-align:center;color:#756d5d;letter-spacing:.16em}
+  #save-slots{display:grid;gap:10px;margin-top:18px;max-height:60vh;overflow-y:auto}
+  .save-slot{display:grid;grid-template-columns:84px 1fr auto;gap:14px;align-items:center;padding:14px 16px;border:1px solid rgba(205,172,95,.18);background:rgba(5,6,8,.42)}
+  .save-slot-name{color:#cbaa62;letter-spacing:.12em}.save-slot-info{color:#9f9682;font-size:11px;line-height:1.6}.save-slot-info b{display:block;color:#d7c8a5;font-size:13px;font-weight:400}
+  .save-actions{display:flex;gap:7px}.save-actions button{padding:7px 12px;border:1px solid rgba(204,173,99,.28);background:rgba(26,21,15,.62);color:#c9b581;font-family:inherit;cursor:pointer}
+  .save-actions button:hover:not(:disabled){border-color:#d9ba70;color:#ead69e}.save-actions button:disabled{opacity:.28;cursor:default}
+  #save-notice{min-height:18px;margin-top:12px;text-align:center;color:#bfa86e;font-size:11px;letter-spacing:.12em}
+
   /* 游戏内标题使用纯透明金字，不再依靠 screen 混合或径向蒙版隐藏底图。 */
   #title{background-image:url("assets/game_logo_shanhemou_cover_transparent_v4.webp");mix-blend-mode:normal;
     -webkit-mask-image:none;mask-image:none;filter:saturate(.94) contrast(1.04) drop-shadow(0 4px 7px rgba(0,0,0,.64))}
@@ -920,11 +954,13 @@
     #cinematic-brand-cover .seal.seal-stamp.image-stamp{width:24px;height:37px;margin-right:9px}
     #dossier-btn{right:9px;bottom:10px;width:42px;height:39px}
     #dossier-btn .dossier-icon{width:37px;height:34px}
+    #audio-btn{right:57px;bottom:10px}.utility-btn{bottom:10px}#history-btn{right:104px}#save-btn{right:149px}
     #stats{gap:4px}
     #stats .stat,#stats .stat:nth-child(1),#stats .stat:nth-child(2),#stats .stat:nth-child(3){width:58px!important;min-width:58px!important;height:38px!important;padding:0 6px!important;gap:5px!important}
     #stats .stat .k{width:18px;height:25px;flex-basis:18px}
     #stats .stat .k::after{right:-3px;top:5px;bottom:5px}
     #stats .stat .v{min-width:17px;font-size:13px!important}
+    .game-panel{padding:10px}.game-panel-scroll{width:96vw;max-height:90vh;padding:21px 14px 18px}.history-entry{grid-template-columns:66px 1fr;gap:10px}.history-copy{font-size:13px}.save-slot{grid-template-columns:64px 1fr;padding:11px 9px}.save-actions{grid-column:1/-1;justify-content:flex-end}
   }
 </style>
 <script type="module">
@@ -2911,6 +2947,12 @@ select {
       <path class="audio-clapper" d="M17.2 27h3.6l-.7 2h-2.2z"/>
     </svg>
   </button>
+  <button id="history-btn" class="utility-btn" type="button" title="剧情回看" aria-label="打开剧情回看" style="display:none">
+    <svg viewBox="0 0 38 38" aria-hidden="true"><path d="M10 9h18M10 29h18M11 9v20M27 9v20M14 13h10M14 17h10M14 21h8M14 25h9"/><path d="M8 7h5v4H8zM25 27h5v4h-5z"/></svg>
+  </button>
+  <button id="save-btn" class="utility-btn" type="button" title="存档与读档" aria-label="打开存档与读档" style="display:none">
+    <svg viewBox="0 0 38 38" aria-hidden="true"><path d="M10 7h17l3 3v21H10zM14 7v8h12V7M14 21h12M14 25h12M14 29h8"/><path d="M27 7v5h3"/></svg>
+  </button>
 
   <!-- 章节仪式转场 -->
   <div id="chapter-overlay" data-aime-line="496" data-aime-column="3" data-aime-path-name="output/manhua_demo_v2.html" data-aime-component-name="div">
@@ -2954,6 +2996,7 @@ select {
     <button class="big-btn" id="start-btn" data-aime-line="518" data-aime-column="5" data-aime-path-name="output/manhua_demo_v2.html" data-aime-component-name="button">入 局 · 开启山河</button>
     <button class="big-btn ghost" id="view-outline-btn" data-aime-line="519" data-aime-column="5" data-aime-path-name="output/manhua_demo_v2.html" data-aime-component-name="button">剧情大纲</button>
     <button class="big-btn ghost" id="view-dossier-btn" data-aime-line="520" data-aime-column="5" data-aime-path-name="output/manhua_demo_v2.html" data-aime-component-name="button">角色档案</button>
+    <button class="big-btn ghost" id="load-save-cover">读取卷宗 · 续前缘</button>
   </div>
   <div id="start-cinematic-hint">◆ 首次入局准备约 16.4 MB 影音资源 · 电影序章可跳过 ◆</div>
   <div id="cache-prep" role="dialog" aria-modal="true" aria-labelledby="cache-title">
@@ -2968,8 +3011,25 @@ select {
         <span id="cache-eta">预计等待：测算中</span>
       </div>
       <div id="cache-status" aria-live="polite">整备山河卷宗……</div>
+      <button id="cache-enter" type="button">启 声 · 入 局</button>
       <button id="cache-skip" type="button">弱网模式 · 直接入局</button>
     </div>
+  </div>
+</div>
+
+<!-- ============ 剧情回看 ============ -->
+<div id="history-panel" class="game-panel" role="dialog" aria-modal="true" aria-labelledby="history-title">
+  <div class="game-panel-scroll">
+    <div class="game-panel-head"><div><div class="game-panel-title" id="history-title">前 尘 卷</div><div class="game-panel-sub">鼠标上滚可随时回看 · H 键开合</div></div><button class="panel-close" id="history-close" type="button">收 卷</button></div>
+    <div id="history-list"></div>
+  </div>
+</div>
+
+<!-- ============ 存档 / 读档 ============ -->
+<div id="save-panel" class="game-panel" role="dialog" aria-modal="true" aria-labelledby="save-title">
+  <div class="game-panel-scroll">
+    <div class="game-panel-head"><div><div class="game-panel-title" id="save-title">山 河 卷 宗</div><div class="game-panel-sub">自动存档 + 三枚手动档位 · 数据保存在当前浏览器</div></div><button class="panel-close" id="save-close" type="button">合 卷</button></div>
+    <div id="save-slots"></div><div id="save-notice" aria-live="polite"></div>
   </div>
 </div>
 
@@ -3314,14 +3374,15 @@ const el = {
   progFill:$('#progress-fill'), progNodes:$('#progress-nodes'),
   speaker:$('#speaker-box'), speakerName:$('#speaker-name'), speakerType:$('#speaker-type'),
   dbox:$('#dialogue-box'), content:$('#content'), choices:$('#choices'), hint:$('#continue-hint'),
-  toast:$('#toast'), dossierBtn:$('#dossier-btn'),
+  toast:$('#toast'), dossierBtn:$('#dossier-btn'), historyBtn:$('#history-btn'), saveBtn:$('#save-btn'),
   charXiao:$('#char-xiao'), charShen:$('#char-shen'),
   start:$('#start-screen'), outline:$('#outline-screen'), dossier:$('#dossier-screen'), ending:$('#ending-screen'),
   mg:$('#minigame'),
   overlay:$('#chapter-overlay'), overlayKicker:$('#chapter-kicker'), overlayTitle:$('#chapter-title-large'),
+  historyPanel:$('#history-panel'), historyList:$('#history-list'), savePanel:$('#save-panel'), saveSlots:$('#save-slots'),
 };
 
-const state = { ch:-1, wit:40, power:40, bond:30, cur:null, typing:false, typeTimer:null, collected:new Set() };
+const state = { ch:-1, wit:40, power:40, bond:30, cur:null, typing:false, typeTimer:null, collected:new Set(), history:[] };
 try{ const saved = JSON.parse(localStorage.getItem('shanhemou_endings')||'[]'); saved.forEach(e=>state.collected.add(e)); }catch(e){}
 
 // 精美原画映射表
@@ -3373,12 +3434,12 @@ const SCENE_WEATHER = {
  *  六首 CC0 曲目按节点编排；跨曲 1.8 秒淡入淡出，选择/高潮自动增益
  * ===================================================================== */
 const BGM_LIBRARY = {
-  tension: {src:'assets/bgm/tension_suspense.mp3?v=20260810-audio2', volume:.22},
-  intrigue:{src:'assets/bgm/intrigue_oriented.mp3?v=20260810-audio2', volume:.24},
-  calm:    {src:'assets/bgm/calm_oriental.mp3?v=20260810-audio2', volume:.20},
-  sorrow:  {src:'assets/bgm/sorrow_sadness.mp3?v=20260810-audio2', volume:.25},
-  climax:  {src:'assets/bgm/climax_battle.mp3?v=20260810-audio2', volume:.30},
-  triumph: {src:'assets/bgm/triumph_orchestral.mp3?v=20260810-audio2', volume:.27}
+  tension: {src:'assets/bgm/tension_suspense.mp3?v=20260810-audio4',fallback:'assets/bgm/tension_suspense.ogg?v=20260810-audio4',volume:.36},
+  intrigue:{src:'assets/bgm/intrigue_oriented.mp3?v=20260810-audio4',fallback:'assets/bgm/intrigue_oriented.ogg?v=20260810-audio4',volume:.38},
+  calm:    {src:'assets/bgm/calm_oriental.mp3?v=20260810-audio4',volume:.32},
+  sorrow:  {src:'assets/bgm/sorrow_sadness.mp3?v=20260810-audio4',fallback:'assets/bgm/sorrow_sadness.ogg?v=20260810-audio4',volume:.38},
+  climax:  {src:'assets/bgm/climax_battle.mp3?v=20260810-audio4',volume:.46},
+  triumph: {src:'assets/bgm/triumph_orchestral.mp3?v=20260810-audio4',volume:.42}
 };
 
 const NODE_BGM = {
@@ -3409,13 +3470,20 @@ class BgmDirector{
     const button=document.getElementById('audio-btn');
     if(button){button.classList.add('needs-gesture');button.title='点击开启背景音乐'}
   }
+  playTrack(audio,track){
+    const attempt=src=>{audio.src=src;audio.load();return audio.play()};
+    return attempt(track.src).catch(primaryError=>{
+      if(!track.fallback)throw primaryError;
+      return attempt(track.fallback);
+    });
+  }
   unlock(){
     if(this.unlocked){this.resume();return}
     this.unlocked=true;
     this.mood='tension';
     const a=this.channels[this.active];
-    a.src=BGM_LIBRARY.tension.src;a.volume=0;
-    a.play().then(()=>{this.markAudible();this.fadeVolume(a,this.muted?0:BGM_LIBRARY.tension.volume,650)}).catch(err=>{this.requestGesture();console.warn('BGM unlock failed',err)});
+    a.volume=0;
+    this.playTrack(a,BGM_LIBRARY.tension).then(()=>{this.markAudible();this.fadeVolume(a,this.muted?0:BGM_LIBRARY.tension.volume,650)}).catch(err=>{this.requestGesture();console.warn('BGM unlock failed',err)});
   }
   resume(){
     if(!this.unlocked||this.muted)return;
@@ -3452,9 +3520,9 @@ class BgmDirector{
     const nextIndex=1-this.active;
     const next=this.channels[nextIndex];
     this.active=nextIndex;
-    next.pause();next.src=base.src;next.currentTime=0;next.volume=0;
+    next.pause();next.currentTime=0;next.volume=0;
     const token=++this.fadeToken;
-    next.play().then(()=>{this.markAudible();this.crossfade(old,next,target,1800,token)}).catch(err=>{this.requestGesture();console.warn('BGM unavailable',base.src,err)});
+    this.playTrack(next,base).then(()=>{this.markAudible();this.crossfade(old,next,target,1800,token)}).catch(err=>{this.requestGesture();console.warn('BGM unavailable',base.src,err)});
   }
   crossfade(oldAudio,newAudio,target,duration,token){
     const started=performance.now(),oldStart=oldAudio.volume;
@@ -3470,6 +3538,10 @@ class BgmDirector{
     const token=++this.fadeToken,started=performance.now(),from=audio.volume;
     const step=now=>{if(token!==this.fadeToken)return;const p=Math.min(1,(now-started)/duration);audio.volume=from+(target-from)*p;if(p<1)requestAnimationFrame(step)};
     requestAnimationFrame(step);
+  }
+  forceAudible(){
+    this.muted=false;localStorage.setItem('shanhemou_bgm_muted','0');
+    if(!this.unlocked)this.unlock();else this.resume();
   }
   toggle(){
     this.muted=!this.muted;localStorage.setItem('shanhemou_bgm_muted',this.muted?'1':'0');
@@ -3522,10 +3594,10 @@ const VIDEO_FALLBACKS={
 
 /* 首次入局只缓存开场和前段剧情的核心资源；其余内容随剧情按需预取。 */
 const CORE_CACHE_ASSETS=[
-  {label:'紧张配乐',url:BGM_LIBRARY.tension.src,bytes:534509},
-  {label:'权谋配乐',url:BGM_LIBRARY.intrigue.src,bytes:1847946},
+  {label:'紧张配乐',url:BGM_LIBRARY.tension.src,fallback:BGM_LIBRARY.tension.fallback,bytes:534509},
+  {label:'权谋配乐',url:BGM_LIBRARY.intrigue.src,fallback:BGM_LIBRARY.intrigue.fallback,bytes:1847946},
   {label:'平静配乐',url:BGM_LIBRARY.calm.src,bytes:451440},
-  {label:'悲情配乐',url:BGM_LIBRARY.sorrow.src,bytes:501595},
+  {label:'悲情配乐',url:BGM_LIBRARY.sorrow.src,fallback:BGM_LIBRARY.sorrow.fallback,bytes:501595},
   {label:'电影序章',url:VIDEO_SLOTS.opening,fallback:VIDEO_FALLBACKS.opening,bytes:4527111},
   {label:'午门前尘',url:VIDEO_SLOTS.execution_prologue,fallback:VIDEO_FALLBACKS.execution_prologue,bytes:8833748},
   {label:'重生场景',url:'assets/sc_chamber_v4.webp',bytes:144610},
@@ -3538,7 +3610,7 @@ const CORE_CACHE_TOTAL=CORE_CACHE_ASSETS.reduce((sum,item)=>sum+item.bytes,0);
 let coreCachePromise=null,coreCacheAbort=null,cacheBypassed=false;
 const cacheUI={
   panel:$('#cache-prep'),progress:$('#cache-progress'),size:$('#cache-size'),speed:$('#cache-speed'),
-  eta:$('#cache-eta'),status:$('#cache-status'),skip:$('#cache-skip')
+  eta:$('#cache-eta'),status:$('#cache-status'),skip:$('#cache-skip'),enter:$('#cache-enter')
 };
 function formatCacheBytes(bytes){return `${(bytes/1048576).toFixed(bytes>=10485760?1:2)} MB`}
 function formatWait(seconds){
@@ -3654,6 +3726,59 @@ const CINEMATIC_STORIES={
   ]
 };
 const playedCinematics=new Set();
+
+/* =====================================================================
+ *  剧情回看 + 本地存读档
+ * ===================================================================== */
+const SAVE_KEYS={auto:'shanhemou_save_auto',slot1:'shanhemou_save_1',slot2:'shanhemou_save_2',slot3:'shanhemou_save_3'};
+let restoringSave=false;
+function escapeGameText(value){return String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]))}
+function addHistoryEntry(entry){
+  const last=state.history[state.history.length-1];
+  if(last&&entry.id&&last.id===entry.id)return;
+  state.history.push({...entry,at:Date.now()});if(state.history.length>160)state.history.shift();
+}
+function renderHistory(){
+  if(!state.history.length){el.historyList.innerHTML='<div class="history-empty">卷上尚无旧事</div>';return}
+  el.historyList.innerHTML=state.history.map(item=>`<div class="history-entry ${item.kind==='choice'?'choice':''}"><div class="history-speaker ${item.speaker?'':'narrator'}">${escapeGameText(item.speaker||'旁白')}</div><div class="history-copy">${escapeGameText(item.text)}</div></div>`).join('');
+  requestAnimationFrame(()=>{el.historyList.scrollTop=el.historyList.scrollHeight});
+}
+function openHistory(){renderHistory();el.historyPanel.classList.add('show');el.historyPanel.style.display='flex'}
+function closeHistory(){el.historyPanel.classList.remove('show');setTimeout(()=>{el.historyPanel.style.display='none'},260)}
+function makeSaveData(){
+  if(!state.cur||!STORY.nodes[state.cur])return null;
+  return {version:2,savedAt:Date.now(),cur:state.cur,ch:state.ch,wit:state.wit,power:state.power,bond:state.bond,
+    history:state.history.slice(-160),played:[...playedCinematics],collected:[...state.collected]};
+}
+function readSave(slot){try{return JSON.parse(localStorage.getItem(SAVE_KEYS[slot])||'null')}catch(error){return null}}
+function writeSave(slot,quiet=false){
+  const data=makeSaveData();if(!data)return false;
+  try{localStorage.setItem(SAVE_KEYS[slot],JSON.stringify(data));if(!quiet)$('#save-notice').textContent='卷宗已封存';return true}catch(error){if(!quiet)$('#save-notice').textContent='当前浏览器不允许保存数据';return false}
+}
+function saveLabel(data){
+  if(!data||!STORY.nodes[data.cur])return '<span>尚无落笔</span>';
+  const node=STORY.nodes[data.cur],chapter=CHAPTERS[Number.isInteger(data.ch)?data.ch:node.ch]||'未知章节';
+  return `<b>${escapeGameText(chapter)} · ${escapeGameText(node.speaker||'旁白')}</b>${new Date(data.savedAt).toLocaleString()}　谋 ${data.wit} · 势 ${data.power} · 契 ${data.bond}`;
+}
+function renderSaveSlots(){
+  const slots=[['auto','自动卷'],['slot1','卷一'],['slot2','卷二'],['slot3','卷三']];
+  el.saveSlots.innerHTML=slots.map(([key,name])=>{const data=readSave(key),manual=key!=='auto';return `<div class="save-slot"><div class="save-slot-name">${name}</div><div class="save-slot-info">${saveLabel(data)}</div><div class="save-actions">${manual?`<button type="button" data-save="${key}" ${state.cur?'':'disabled'}>存档</button>`:''}<button type="button" data-load="${key}" ${data?'':'disabled'}>读档</button></div></div>`}).join('');
+  el.saveSlots.querySelectorAll('[data-save]').forEach(button=>button.onclick=()=>{writeSave(button.dataset.save);renderSaveSlots()});
+  el.saveSlots.querySelectorAll('[data-load]').forEach(button=>button.onclick=()=>loadGame(button.dataset.load));
+}
+function openSavePanel(){renderSaveSlots();$('#save-notice').textContent='';el.savePanel.classList.add('show');el.savePanel.style.display='flex'}
+function closeSavePanel(){el.savePanel.classList.remove('show');setTimeout(()=>{el.savePanel.style.display='none'},260)}
+function loadGame(slot){
+  const data=readSave(slot);if(!data||!STORY.nodes[data.cur]){$('#save-notice').textContent='此卷无法读取';return}
+  clearTimeout(state.typeTimer);closeSavePanel();el.ending.classList.remove('show');el.start.style.display='none';el.outline.classList.remove('show');el.dossier.classList.remove('show');
+  el.hud.style.display='block';el.dbox.style.display='block';el.dossierBtn.style.display='flex';el.historyBtn.style.display='block';el.saveBtn.style.display='block';
+  state.cur=null;state.ch=Number.isInteger(data.ch)?data.ch:-1;state.wit=Number(data.wit)||40;state.power=Number(data.power)||40;state.bond=Number(data.bond)||30;
+  state.history=Array.isArray(data.history)?data.history:[];state.collected=new Set(Array.isArray(data.collected)?data.collected:[]);
+  playedCinematics.clear();(Array.isArray(data.played)?data.played:[]).forEach(slotName=>playedCinematics.add(slotName));
+  setStat('wit',state.wit,0);setStat('power',state.power,0);setStat('bond',state.bond,0);
+  el.charXiao.className='char-portrait char-left';el.charShen.className='char-portrait char-right';gameStarting=true;restoringSave=true;
+  bgm.forceAudible();syncAudioButton();goto(data.cur);restoringSave=false;
+}
 function playCinematic(slot,done){
   if(playedCinematics.has(slot)){done();return}
   playedCinematics.add(slot);
@@ -4274,7 +4399,7 @@ function renderChoices(choices){
     b.className = 'choice-btn';
     b.style.animation = `fadeIn .4s ease ${idx*.12}s both`;
     b.innerHTML = `${c.text}${c.tag?`<span class="tag">${c.tag}</span>`:''}`;
-    b.onclick = ()=>{ applyEffects(c.effects); el.choices.innerHTML=''; goto(c.next); };
+    b.onclick = ()=>{addHistoryEntry({id:`choice:${state.cur}:${idx}:${c.text}`,kind:'choice',speaker:'抉择',text:c.text});applyEffects(c.effects);el.choices.innerHTML='';goto(c.next)};
     el.choices.appendChild(b);
   });
 }
@@ -4334,6 +4459,8 @@ function goto(id){
     updateCharacterPortraits(node);
     bgm.cue(id,node);
     preloadUpcomingAssets(node);
+    addHistoryEntry({id,kind:node.type,speaker:node.speaker||'',text:node.content});
+    writeSave('auto',true);
     el.choices.innerHTML = '';
 
     if(node.shake) triggerScreenShake();
@@ -4360,7 +4487,13 @@ function advance(){
   if(node.next) goto(node.next);
 }
 el.dbox.addEventListener('click', e=>{ if(e.target.closest('.choice-btn')) return; advance(); });
-document.addEventListener('keydown', e=>{ if(e.code==='Space'||e.code==='Enter'){ e.preventDefault(); if(el.dbox.style.display!=='none') advance(); } });
+el.dbox.addEventListener('wheel',e=>{if(e.deltaY<0&&state.history.length&&!el.historyPanel.classList.contains('show')){e.preventDefault();openHistory()}},{passive:false});
+document.addEventListener('keydown', e=>{
+  if(e.code==='Escape'){closeHistory();closeSavePanel();return}
+  if(e.code==='KeyH'&&!e.ctrlKey&&!e.metaKey){e.preventDefault();el.historyPanel.classList.contains('show')?closeHistory():openHistory();return}
+  if((el.historyPanel.classList.contains('show')||el.savePanel.classList.contains('show')))return;
+  if(e.code==='Space'||e.code==='Enter'){e.preventDefault();if(el.dbox.style.display!=='none')advance()}
+});
 
 /* =====================================================================
  *  小游戏：朝堂辨伪
@@ -4476,6 +4609,8 @@ function beginGame(){
     el.hud.style.display='block';
     el.dbox.style.display='block';
     el.dossierBtn.style.display='flex';
+    el.historyBtn.style.display='block';
+    el.saveBtn.style.display='block';
     
     state.ch=-1; state.wit=40; state.power=40; state.bond=30;
     setStat('wit',40,0); setStat('power',40,0); setStat('bond',30,0);
@@ -4501,15 +4636,16 @@ function launchGame(){
 
 async function requestGameStart(){
   if(gameStarting)return;
-  /* 在玩家点击手势中解锁音频；缓存期间以低音量建立氛围。 */
-  bgm.unlock();
   await prepareCoreCache();
-  if(!gameStarting)launchGame();
+  if(gameStarting)return;
+  cacheUI.status.textContent='影音已备妥 · 请亲手启声入局';
+  cacheUI.enter.classList.add('show');cacheUI.skip.style.display='none';cacheUI.enter.focus();
 }
+cacheUI.enter.onclick=()=>{bgm.forceAudible();syncAudioButton();launchGame()};
 cacheUI.skip.onclick=()=>{
   cacheBypassed=true;if(coreCacheAbort)coreCacheAbort.abort();
   cacheUI.status.textContent='已切换弱网模式 · 剧情资源将按需加载';
-  launchGame();
+  bgm.forceAudible();syncAudioButton();launchGame();
 };
 
 $('#start-btn').onclick = requestGameStart;
@@ -4518,17 +4654,22 @@ $('#view-outline-btn').onclick = ()=> el.outline.classList.add('show');
 $('#outline-back').onclick = ()=> el.outline.classList.remove('show');
 $('#outline-confirm').onclick = requestGameStart;
 $('#view-dossier-btn').onclick = ()=> el.dossier.classList.add('show');
+$('#load-save-cover').onclick=openSavePanel;
 $('#ending-dossier-btn').onclick = ()=> el.dossier.classList.add('show');
 $('#dossier-close').onclick = ()=> el.dossier.classList.remove('show');
 $('#dossier-btn').onclick = ()=> el.dossier.classList.add('show');
 $('#dossier-btn').onkeydown = e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();el.dossier.classList.add('show')}};
+el.historyBtn.onclick=openHistory;el.saveBtn.onclick=openSavePanel;
+$('#history-close').onclick=closeHistory;$('#save-close').onclick=closeSavePanel;
+el.historyPanel.addEventListener('click',e=>{if(e.target===el.historyPanel)closeHistory()});
+el.savePanel.addEventListener('click',e=>{if(e.target===el.savePanel)closeSavePanel()});
 $('#restart-btn').onclick = ()=>{
   el.ending.classList.remove('show');
   el.hud.style.display='block';
   el.dbox.style.display='block';
   el.dossierBtn.style.display='flex';
   
-  state.ch=-1; state.wit=40; state.power=40; state.bond=30;
+  state.ch=-1; state.wit=40; state.power=40; state.bond=30;state.history=[];
   setStat('wit',40,0); setStat('power',40,0); setStat('bond',30,0);
   
   el.charXiao.className = 'char-portrait char-left';
